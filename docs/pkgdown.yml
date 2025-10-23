@@ -1,0 +1,10 @@
+pandoc: 3.1.11
+pkgdown: 2.0.9
+pkgdown_sha: ~
+articles:
+  CUHK_workshop_v4: CUHK_workshop_v4.html
+last_built: 2025-06-13T03:11Z
+urls:
+  reference: https://sydneybiox.github.io/2025_CUHK_workshop/reference
+  article: https://sydneybiox.github.io/2025_CUHK_workshop/articles
+
