@@ -1,4 +1,4 @@
-Package: CUHK2025
+Package: NUS2025
 Title: Unlocking single cell spatial omics analyses with SCDNEY
 Version: 0.1.0
 Authors@R: 
@@ -24,4 +24,4 @@ Suggests:
   knitr,
   rmarkdown,
   pkgdown
-URL: https://sydneybiox.github.io/2025_CUHK_workshop/
+URL: https://sydneybiox.github.io/2025_NUS_Workshop/

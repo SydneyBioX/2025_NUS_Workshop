@@ -2,7 +2,7 @@
 
 Data can be accessed from dropbox: https://www.dropbox.com/scl/fi/92h9jd23kxz7i62op2a5u/data.zip?rlkey=ycncox2mmds8555nps0z2p0t3&st=dvywivsn&dl=0
 
-Website at https://sydneybiox.github.io/2025_CUHK_workshop/
+Website at https://sydneybiox.github.io/2025_NUS_Workshop/
 
 Slide at: TBA
 
