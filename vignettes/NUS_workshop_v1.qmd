@@ -75,7 +75,7 @@ suppressMessages({
 # In-house functions used in workshop
 
 # code for plotting purpose
-plot_boxplot <- function( feature ){
+plot_boxplot <- function(feature){
   
   data_plot <- t(feature)
   data_plot <- melt(data_plot )
@@ -94,7 +94,7 @@ plot_boxplot <- function( feature ){
 }
   
 
-plot_barplot <- function(data , dodge=F  ){
+plot_barplot <- function(data , dodge=F){
 
   data$patient <- unlist( lapply( strsplit( rownames(data ), "_cond_"), `[`, 1))
   data$condition <- unlist( lapply( strsplit( rownames(data ), "_cond_"), `[`, 2))
@@ -112,7 +112,7 @@ plot_barplot <- function(data , dodge=F  ){
 
 
  
-draw_dotplot <- function(data_sce, sample, celltype , group , group_of_interest ){
+draw_dotplot <- function(data_sce, sample, celltype , group , group_of_interest){
 
   df <- data.frame(colData( data_sce))
   # for each patient, calculate the proportion of each cell type in each region.  
@@ -146,7 +146,7 @@ draw_dotplot <- function(data_sce, sample, celltype , group , group_of_interest 
   return(p)
 }
 
-draw_region_clustering_result <- function( data_sce, sample , selected_sample   ){
+draw_region_clustering_result <- function(data_sce, sample , selected_sample){
   # get meta data for a selected patient to visualise 
   metadata <- colData(data_sce)
   metadata <- metadata[metadata[[sample]] == selected_sample ,  ]
@@ -208,7 +208,7 @@ draw_region_clustering_result <- function( data_sce, sample , selected_sample   
 }
 
 
-draw_selected_region_boxplot <- function(data_sce, sample , celltype, group ,  group_of_interest, select_region){
+draw_selected_region_boxplot <- function(data_sce, sample, celltype, group ,  group_of_interest, select_region){
   
     df <- clinical[colData(data_sce)[, sample ], ]
    df$region <- data_sce$region
@@ -445,6 +445,8 @@ A subset of the widely-known METABRIC breast cancer cohort has recently been ana
 :::
 
 ::: question 
+
+:::
 
 
 ::: question
@@ -1102,7 +1104,7 @@ plot_boxplot(feature) +
 ```
 :::
 
-# Part 5: Disease classification with ClassifyR
+# Part 5: Disease classification with ClassifyR [Presentation]
 
 Recurrence risk estimation is a fundamental concern in medical research, particularly in the context of patient survival analysis. In this section, we will estimate recurrence risk using the molecular representation of individuals generated from `scFeatures` to build a survival model. We will use classifyR to build the survival model. The patient outcome is time-to-event, so, by default, ClassifyR will use Cox proportional hazards ranking to choose a set of features and also Cox proportional hazards to predict risk scores. We will also demonstrate other available models in `ClassifyR`.
 
@@ -1230,15 +1232,13 @@ ggarrange(plotlist = list(a,b))
 We calculate the nearest neighbours of each cell and then calculate the pairs of cell-types based on the nearest neighbour. This allows us to summarise it into a cell-type interaction composition.
 
 ```{r fig.height=6, fig.width=10, warning=FALSE, error=FALSE, message=FALSE}
- 
-one_sample  <- data_sce[ , data_sce$metabricId == "MB-0263"  ]
+ one_sample  <- data_sce[ , data_sce$metabricId == "MB-0263"  ]
 one_sample <- data.frame( colData(one_sample) )
 
 one_sample$celltype <- one_sample$description
  
 a <-ggplot( one_sample, aes(x = Location_Center_X , y = Location_Center_Y, colour = celltype )) + geom_point()  + scale_colour_manual(values = color_codes)  + ggtitle("Patient MB-0263")
-
-
+e
 feature  <- scfeatures_result$celltype_interaction
 to_plot <- data.frame( t( feature[ "MB-0263_cond_poor" , ])  )
 to_plot$feature <- rownames(to_plot) 
@@ -1260,7 +1260,6 @@ ggarrange(plotlist = list(a,b))
 Moran's I is a spatial autocorrelation statistic based on both location and values. It quantifies whether similar values tend to occur near each other or are dispersed.
 
 ```{r fig.height=4, fig.width=10, warning=FALSE, error=FALSE, message=FALSE}
-
 high  <- data_sce["Ki67", data_sce$metabricId == "MB-0132"  ]
 high_meta <- data.frame( colData(high) ) 
 high_meta$expression <- as.vector(logcounts( high)) 
@@ -1275,8 +1274,6 @@ a <- ggplot(high_meta, aes(x = Location_Center_X , y = Location_Center_Y, colour
 b <- ggplot(low_meta, aes(x = Location_Center_X , y = Location_Center_Y, colour =expression)) + geom_point(alpha=0.5) + scale_colour_viridis_c() + ggtitle("Patient MB-0249 - low Moran's I in Ki67")
 
 ggarrange(plotlist = list(a,b))
- 
-
 ```
 
 -   Nearest Neighbor Correlation:
@@ -1284,10 +1281,7 @@ ggarrange(plotlist = list(a,b))
 This metric measures the correlation of proteins/genes between a cell and its nearest neighbour cell.
 
 ```{r fig.height=5, fig.width=10, warning=FALSE, error=FALSE, message=FALSE}
-
-
-    
- plot_nncorrelation <- function(thissample , thisprotein){
+plot_nncorrelation <- function(thissample , thisprotein){
    
        sample_name <- thissample
        thissample <- data_sce[, data_sce$metabricId ==     sample_name]
