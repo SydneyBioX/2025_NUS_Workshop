@@ -477,7 +477,7 @@ First, we take a quick look at the structure of the SingleCell Experiment object
 
 ```{r load, warning=FALSE, error=FALSE, message=FALSE}
 # Load data
-load("../2025_CUHK/data/breastCancer.RData")
+load("../2025_NUS/data/breastCancer.RData")
 data_sce = IMC
 
 # Structure of our data
@@ -710,7 +710,7 @@ Here we plot the correlation of different markers for a subset of samples. This 
 <br>
 
 ```{r, warning=FALSE, error=FALSE, message=FALSE}
-coexp_df <- readRDS("../2025_CUHK/data/coexp_df.rds")
+coexp_df <- readRDS("../2025_NUS/data/coexp_df.rds")
 marker_list <- c("CD20", "CD3", "CD68", "vWF_CD31", "Vimentin", "HER2")
  
 # Proportion heatmaps
@@ -1077,7 +1077,7 @@ Assuming you have already generated a collection of molecular representation for
 
 ```{r, warning=FALSE, error=FALSE, message=FALSE}
 # Upload pre-generated RDS file
-scfeatures_result <- readRDS("../2025_CUHK/data/scfeatures_result.RDS")
+scfeatures_result <- readRDS("../2025_NUS/data/scfeatures_result.RDS")
 
 # What are the features and the dimensions of features matrices that we have generated?
 lapply(scfeatures_result, dim)
@@ -1179,7 +1179,7 @@ classifyr_result_IMC <- crossValidate(clinicalAndOmics, c("timeRFS", "eventRFS")
 ```
 
 ```{r, warning=FALSE, error=FALSE, message=FALSE}
-classifyr_result_IMC <- readRDS("../2025_CUHK/data/classifyr_result_IMC.rds")
+classifyr_result_IMC <- readRDS("../2025_NUS/data/classifyr_result_IMC.rds")
 ```
 
 Cox proportional hazards is a classical statistical method, as opposed to machine learning methods like Random survival forest. These machine learning methods can build remarkably complex relationships between features, however their running time can be much longer than Cox proportional hazards. We use feature selection to limit the number of features considered to at most 100 per metafeature and to save time, **you can just load the prepared RDS file.** We will compare the predictive performance between these methods.
@@ -1192,7 +1192,7 @@ survForestCV <- crossValidate(clinicalAndOmics, outcome, nFeatures = nFeatures,
 ```
 
 ```{r, warning=FALSE, error=FALSE, message=FALSE}
-survForestCV <- readRDS("../2025_CUHK/data/survForestCV.RDS")
+survForestCV <- readRDS("../2025_NUS/data/survForestCV.RDS")
 ```
 
 ### Model performance (Optional)
