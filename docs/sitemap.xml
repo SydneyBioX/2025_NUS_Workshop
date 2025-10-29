@@ -1,39 +1,16 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://sydneybiox.github.io/2025_CUHK_workshop/404.html</loc>
-  </url>
-  <url>
-    <loc>https://sydneybiox.github.io/2025_CUHK_workshop/LICENSE-text.html</loc>
-  </url>
-  <url>
-    <loc>https://sydneybiox.github.io/2025_CUHK_workshop/articles/CUHK_workshop_v2.html</loc>
-  </url>
-  <url>
-    <loc>https://sydneybiox.github.io/2025_CUHK_workshop/articles/CUHK_workshop_v3.html</loc>
-  </url>
-  <url>
-    <loc>https://sydneybiox.github.io/2025_CUHK_workshop/articles/CUHK_workshop_v4.html</loc>
-  </url>
-  <url>
-    <loc>https://sydneybiox.github.io/2025_CUHK_workshop/articles/VisiumVersion3.html</loc>
-  </url>
-  <url>
-    <loc>https://sydneybiox.github.io/2025_CUHK_workshop/articles/breastCancerIMC.html</loc>
-  </url>
-  <url>
-    <loc>https://sydneybiox.github.io/2025_CUHK_workshop/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>https://sydneybiox.github.io/2025_CUHK_workshop/authors.html</loc>
-  </url>
-  <url>
-    <loc>https://sydneybiox.github.io/2025_CUHK_workshop/index.html</loc>
-  </url>
-  <url>
-    <loc>https://sydneybiox.github.io/2025_CUHK_workshop/reference/hello.html</loc>
-  </url>
-  <url>
-    <loc>https://sydneybiox.github.io/2025_CUHK_workshop/reference/index.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://sydneybiox.github.io/2025_NUS_Workshop/404.html</loc></url>
+<url><loc>https://sydneybiox.github.io/2025_NUS_Workshop/LICENSE-text.html</loc></url>
+<url><loc>https://sydneybiox.github.io/2025_NUS_Workshop/articles/CUHK_workshop_v2.html</loc></url>
+<url><loc>https://sydneybiox.github.io/2025_NUS_Workshop/articles/CUHK_workshop_v3.html</loc></url>
+<url><loc>https://sydneybiox.github.io/2025_NUS_Workshop/articles/CUHK_workshop_v4.html</loc></url>
+<url><loc>https://sydneybiox.github.io/2025_NUS_Workshop/articles/NUS_workshop_v1.html</loc></url>
+<url><loc>https://sydneybiox.github.io/2025_NUS_Workshop/articles/VisiumVersion3.html</loc></url>
+<url><loc>https://sydneybiox.github.io/2025_NUS_Workshop/articles/breastCancerIMC.html</loc></url>
+<url><loc>https://sydneybiox.github.io/2025_NUS_Workshop/articles/index.html</loc></url>
+<url><loc>https://sydneybiox.github.io/2025_NUS_Workshop/authors.html</loc></url>
+<url><loc>https://sydneybiox.github.io/2025_NUS_Workshop/index.html</loc></url>
+<url><loc>https://sydneybiox.github.io/2025_NUS_Workshop/reference/hello.html</loc></url>
+<url><loc>https://sydneybiox.github.io/2025_NUS_Workshop/reference/index.html</loc></url>
 </urlset>
+
