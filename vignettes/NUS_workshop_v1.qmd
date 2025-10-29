@@ -459,7 +459,9 @@ We want to know if the risk of recurrence in the METABRIC breast cancer cohort c
 
 To begin, we will start with loading an example image in R. It is not neccessary for you to be familiar with this part, as we will provide you with pre-processed data for the rest of the workshop. 
 
-```{r, warning=FALSE, error=FALSE, message=FALSE}
+::: panel-tabset
+### DNA staining image
+```{r, warning=FALSE, error=FALSE, message=FALSE, fig.width=10, fig.height=4}
 suppressPackageStartupMessages({
   library(cytomapper)
   library(EBImage)
@@ -495,9 +497,22 @@ merged <- merge(metal_order, metal_map, by = "metal", all.x = TRUE)
 merged <- merged[order(merged$Channel), ]
 labels <- ifelse(is.na(merged$marker), merged$metal, merged$marker)
 
-# ssign channel names to the multi-channel image
+# Assign channel names to the multi-channel image
 channelNames(images) <- labels
+marker = plotPixels(
+  image = images,
+  colour_by = "Total HH3"
+)
+```
+### Mask
 
+```{r, warning=FALSE, error=FALSE, message=FALSE, fig.width=10, fig.height=4}
+# Plot the mask
+plotCells(masks)
+```
+
+### Overlay
+```{r, warning=FALSE, error=FALSE, message=FALSE, fig.width=10, fig.height=4}
 # Plot overlay 
 combine = plotPixels(
   image    = images,
@@ -506,7 +521,7 @@ combine = plotPixels(
   colour_by = "Total HH3"     
 )
 ```
-
+:::
 # Part 1: Exploring the data
 
 ## 1.1: Initial data exploration
