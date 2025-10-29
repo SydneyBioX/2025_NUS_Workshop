@@ -1098,9 +1098,9 @@ scfeatures_result <- scFeatures(IMCmatrix,
 # feature_types, and
 # type
 
-index <-   grep("HR- CK7+-region" , data_sce$celltype, fixed=TRUE)
-selected_data  <-  IMCmatrix[, index]
-selected_sample <-  sample[index]
+index <- grep("HR- CK7+-region" , data_sce$celltype, fixed=TRUE)
+selected_data <- IMCmatrix[, index]
+selected_sample <- sample[index]
 selected_celltype <- data_sce$celltype[ index] 
 selected_spatialCoords <- list(colData(data_sce)$Location_Center_X[index], 
                                colData(data_sce)$Location_Center_Y[index])
