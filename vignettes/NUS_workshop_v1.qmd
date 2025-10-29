@@ -454,6 +454,60 @@ We want to know if the risk of recurrence in the METABRIC breast cancer cohort c
 **Loading IMC data from a tiff file** @Lijia
 :::
 
+# Part 0: Loading an example image in R
+
+To begin, we will start with loading an example image in R. It is not neccessary for you to be familiar with this part, as we will provide you with pre-processed data for the rest of the workshop. 
+
+```{r, warning=FALSE, error=FALSE, message=FALSE}
+suppressPackageStartupMessages({
+  library(cytomapper)
+  library(EBImage)
+  library(S4Vectors)
+})
+
+img_path  <- "../2025_NUS/data/raw_image_example/MB0002_1_345_fullstack.tiff"
+mask_path <- "../2025_NUS/data/raw_image_example/MB0002_1_345_cellmask.tiff"
+sample_id <- "../2025_NUS/data/raw_image_example/MB0002_1_345"
+
+#Load image (multi-channel)
+images <- loadImages(img_path, single_channel = FALSE)
+names(images) <- sample_id
+#Load mask
+mask_img <- readImage(mask_path,as.is =T)
+masks <- CytoImageList(list(mask_img))
+names(masks) <- sample_id
+
+# Add metadata rows so img_id can be matched by COLUMN NAME
+mcols(images) <- DataFrame(sample_id = names(images))
+mcols(masks)  <- DataFrame(sample_id = names(masks))
+
+# Build channel names from CSVs and assign them
+metal_order <- read.csv("../2025_NUS/data/raw_image_example/channel_to_metal_order.csv",
+                        header = FALSE, stringsAsFactors = FALSE)
+names(metal_order) <- "metal"
+metal_order$Channel <- seq_len(nrow(metal_order))
+
+metal_map <- read.csv("../2025_NUS/data/raw_image_example/metal_to_marker.csv",
+                      header = TRUE, stringsAsFactors = FALSE)
+
+merged <- merge(metal_order, metal_map, by = "metal", all.x = TRUE)
+merged <- merged[order(merged$Channel), ]
+labels <- ifelse(is.na(merged$marker), merged$metal, merged$marker)
+
+# ssign channel names to the multi-channel image
+channelNames(images) <- labels
+
+# Plot overlay 
+combine = plotPixels(
+  image    = images,
+  mask     = masks,
+  img_id   = "sample_id",      # column name in mcols(images)/mcols(masks)
+  colour_by = "Total HH3"     
+)
+```
+
+
+
 # Part 1: Exploring the data
 
 ## 1.1: Initial data exploration
