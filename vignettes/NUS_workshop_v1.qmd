@@ -52,6 +52,7 @@ suppressMessages({
   library(ClassifyR) ## BiocManager::install("ClassifyR", dependencies = TRUE)
   library(lisaClust) # BiocManager::install("lisaClust")
   library(ggthemes)
+  library(pheatmap)
   library(spicyR) ## BiocManager::install("spicyR")
   library(dplyr)
   library(limma)
@@ -506,8 +507,6 @@ combine = plotPixels(
 )
 ```
 
-
-
 # Part 1: Exploring the data
 
 ## 1.1: Initial data exploration
@@ -847,9 +846,27 @@ tt
 
 Here, we can also check whether the cell type annotations we have make sense. One way to do this is to check whether the marker expression levels agree with the cell type annotations. For example, we expect CD3 to be highly expressed in T cells, CD20 to be highly expressed in B cells, CD68 to be highly expressed in Macrophages, vWF_CD31 to be highly expressed in Endothelial cells, Vimentin to be highly expressed in Fibroblasts, and HER2 to be highly expressed in Tumor HER2+ cells.
 
+```{r}
+# leave out the nuclei markers from our normalisation process
+useMarkers <- rownames(data_sce)[!rownames(data_sce) %in% c("DNA1", "DNA2", "HH3", "HH3_total", "HH3_ph")]
+
+# transform and normalise the marker expression of each cell type
+data_sce <- normalizeCells(data_sce,
+                        markers = useMarkers,
+                        transformation = NULL,
+                        method = c("trim99", "minMax", "PC1"),
+                        assayIn = "counts",
+                        imageID = "metabricId",
+                        cores = nCores)
+
+norm = plot_marker_densities(data_sce, sample_id_col = "metabricId", markers_to_plot = "CD3", assay_name = "norm")$CD3 + theme(legend.position = "none") + ggtitle("")
+log = plot_marker_densities(data_sce, sample_id_col = "metabricId", markers_to_plot = c("CD3"), assay_name = "logcounts")$CD3 + theme(legend.position = "none") + ggtitle("")
+ggarrange(log, norm, ncol=2, labels=c("Log Counts","Normalized Counts"))
+```
+
 ```{r, warning=FALSE, error=FALSE, message=FALSE}
 # Calculate average expression per cell type
-avg_expr <- aggregate(t(assay(fergusonSPE, "norm")), 
+avg_expr <- aggregate(t(assay(data_sce, "norm")), 
                       by = list(CellType = IMC$high_level_category), 
                       FUN = mean) %>%
   tibble::column_to_rownames(var = "CellType")
@@ -860,24 +877,6 @@ avg_expr <- avg_expr[, c("CD20", "CD3", "CD68", "CD45", "CD44",
 # Plot heatmap of marker by celltype
 pheatmap(avg_expr, scale = "column", main = "Average Marker Expression per Cell Type\n", 
          color = colorRampPalette(c("blue", "white", "red"))(10000))
-```
-
-```{r}
-# leave out the nuclei markers from our normalisation process
-useMarkers <- rownames(data_sce)[!rownames(data_sce) %in% c("DNA1", "DNA2", "HH3", "HH3_total", "HH3_ph")]
-
-# transform and normalise the marker expression of each cell type
-fergusonSPE <- normalizeCells(data_sce,
-                        markers = useMarkers,
-                        transformation = NULL,
-                        method = c("trim99", "minMax", "PC1"),
-                        assayIn = "counts",
-                        imageID = "metabricId",
-                        cores = nCores)
-
-norm = plot_marker_densities(fergusonSPE, sample_id_col = "metabricId", markers_to_plot = "CD3", assay_name = "norm")$CD3 + theme(legend.position = "none") + ggtitle("")
-log = plot_marker_densities(fergusonSPE, sample_id_col = "metabricId", markers_to_plot = c("CD3"), assay_name = "logcounts")$CD3 + theme(legend.position = "none") + ggtitle("")
-ggarrange(log, norm, ncol=2, labels=c("Log Counts","Normalized Counts"))
 ```
 
 ::: Discussion
@@ -1328,7 +1327,7 @@ one_sample <- data.frame( colData(one_sample) )
 one_sample$celltype <- one_sample$description
  
 a <-ggplot( one_sample, aes(x = Location_Center_X , y = Location_Center_Y, colour = celltype )) + geom_point()  + scale_colour_manual(values = color_codes)  + ggtitle("Patient MB-0263")
-e
+
 feature  <- scfeatures_result$celltype_interaction
 to_plot <- data.frame( t( feature[ "MB-0263_cond_poor" , ])  )
 to_plot$feature <- rownames(to_plot) 
