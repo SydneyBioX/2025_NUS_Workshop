@@ -451,10 +451,6 @@ A subset of the widely-known METABRIC breast cancer cohort has recently been ana
 We want to know if the risk of recurrence in the METABRIC breast cancer cohort can be accurately estimated to inform how aggressively they need to be treated.
 :::
 
-::: question
-**Loading IMC data from a tiff file** @Lijia
-:::
-
 # Part 0: Loading an example image in R
 
 To begin, we will start with loading an example image in R. It is not neccessary for you to be familiar with this part, as we will provide you with pre-processed data for the rest of the workshop. 
@@ -504,8 +500,8 @@ marker = plotPixels(
   colour_by = "Total HH3"
 )
 ```
-### Mask
 
+### Mask
 ```{r, warning=FALSE, error=FALSE, message=FALSE, fig.width=10, fig.height=4}
 # Plot the mask
 plotCells(masks)
