@@ -844,7 +844,7 @@ data_sce$ki67 <- factor(data_sce$ki67, levels=c("low_ki67", "high_ki67"))
 design_matrix <- model.matrix(~data_sce$ki67)
 
 # Fit model
-fit <- lmFit(logcounts(data_sce), design = design_matrix)
+fit <- lmFit(assay(data_sce, "norm"), design = design_matrix)
 
 # Estimate variance and SE of coefficients
 fit <- eBayes(fit)
@@ -1051,7 +1051,7 @@ Suppose that we are interested in determining the proportion of cell-types withi
 ```{r, warning=FALSE, error=FALSE, message=FALSE}
 ## [A] The next few lines extract specific information from data_sce as input to scFeatures. 
 ## Extract the expression matrix from data_sce
-IMCmatrix <- assay(data_sce)
+IMCmatrix <- assay(data_sce, "norm")
 
 ## Extract the sample information 
 ## append the condition to the individuals so we can easily retrieve the individuals condition 
@@ -1124,15 +1124,15 @@ plot_barplot(feature ) + ggtitle("Proportion raw feature") + labs(y = "proportio
 
 The code below enable us to generate all feature types for all cell-types in a line. Due to limitations with today's computational capacity, **Please DO NOT run it in today's workshop, it will crash your system**.
 
-```         
+```{r}       
 # here, we specify that this is a spatial proteomics data
 # scFeatures support parallel computation to speed up the process 
-scfeatures_result <- scFeatures(IMCmatrix, 
-                                type = "spatial_p",
-                                sample = sample, 
-                                celltype = celltype, 
-                                spatialCoords = spatialCoords,
-                                ncores = 32)
+# scfeatures_result <- scFeatures(IMCmatrix, 
+#                                 type = "spatial_p",
+#                                 sample = sample, 
+#                                 celltype = celltype, 
+#                                 spatialCoords = spatialCoords,
+#                                 ncores = 32)
 ```
 
 ### scFeatures output (Optional)
@@ -1181,7 +1181,7 @@ The L function is a spatial statistic used to assess the spatial distribution of
 
 ```{r, warning=FALSE, error=FALSE, message=FALSE}
 feature <- scfeatures_result$L_stats
-idx <- which(grepl("^T cells-region4_HR", colnames(feature))==TRUE)
+idx <- which(grepl("^T cells-region_4_HR", colnames(feature))==TRUE)
 feature <- feature[,idx]
 feature <- feature[ grep("poor|good", rownames(feature )),  ]
 plot_boxplot(feature) + 
