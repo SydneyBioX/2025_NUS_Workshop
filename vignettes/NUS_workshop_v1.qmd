@@ -445,12 +445,13 @@ A subset of the widely-known METABRIC breast cancer cohort has recently been ana
 :::
 
 ::: question
-:::
-
-::: question
 **Our question of interest**
 
 We want to know if the risk of recurrence in the METABRIC breast cancer cohort can be accurately estimated to inform how aggressively they need to be treated.
+:::
+
+::: question
+**Loading IMC data from a tiff file** @Lijia
 :::
 
 # Part 1: Exploring the data
