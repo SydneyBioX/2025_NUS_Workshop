@@ -27,6 +27,16 @@ sudo apt-get install -y \
   libgit2-dev libglpk-dev libudunits2-dev libgdal-dev libgeos-dev libproj-dev \
   build-essential wget git
 
+sudo apt update
+sudo apt install -y \
+  libmagick++-dev \
+  imagemagick \
+  libmagickcore-6.q16-6-extra
+
+sudo apt install libfftw3-dev
+
+
+
 # ---- 2) Ensure global R site library is writable during install
 SITE_LIB="/usr/local/lib/R/site-library"
 echo "[*] Preparing global R library at ${SITE_LIB}..."
@@ -63,7 +73,7 @@ if (BiocManager::version() != "3.21") {
 cran_pkgs <- c(
   "ggplot2", "UpSetR", "ggthemes", "Seurat", "dplyr", 
   "devtools", "BiocManager", "scattermore", "survival", 
-  "survminer", "spatstat", "reshape", "plotly"
+  "survminer", "spatstat", "reshape", "plotly","fftwtools"
 )
 
 for (pkg in cran_pkgs) {
@@ -76,7 +86,7 @@ for (pkg in cran_pkgs) {
 bioc_pkgs <- c(
   "SingleCellExperiment", "lisaClust", "spicyR",
   "SPOTlight", "limma", "org.Hs.eg.db", "clusterProfiler",
-  "scater", "scran", "simpleSeg", "ClassifyR"
+  "scater", "scran", "simpleSeg", "ClassifyR","EBImage","cytomapper"
 )
 
 for (pkg in bioc_pkgs) {
