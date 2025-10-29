@@ -444,10 +444,8 @@ A subset of the widely-known METABRIC breast cancer cohort has recently been ana
 -   Explore various strategies for disease outcome prognosis using spatial omics data.
 :::
 
-::: question 
-
+::: question
 :::
-
 
 ::: question
 **Our question of interest**
@@ -790,6 +788,43 @@ tt <- topTable(fit, coef = 2, n = 5, adjust.method = "BH", sort.by = "p")
 tt
 ```
 
+## 2.5: Cell Type Classification
+
+Here, we can also check whether the cell type annotations we have make sense. One way to do this is to check whether the marker expression levels agree with the cell type annotations. For example, we expect CD3 to be highly expressed in T cells, CD20 to be highly expressed in B cells, CD68 to be highly expressed in Macrophages, vWF_CD31 to be highly expressed in Endothelial cells, Vimentin to be highly expressed in Fibroblasts, and HER2 to be highly expressed in Tumor HER2+ cells.
+
+```{r, warning=FALSE, error=FALSE, message=FALSE}
+# Calculate average expression per cell type
+avg_expr <- aggregate(t(assay(fergusonSPE, "norm")), 
+                      by = list(CellType = IMC$high_level_category), 
+                      FUN = mean) %>%
+  tibble::column_to_rownames(var = "CellType")
+
+avg_expr <- avg_expr[, c("CD20", "CD3", "CD68", "CD45", "CD44",
+                         "vWF_CD31", "Vimentin", "HER2")]  # select only our mark
+
+# Plot heatmap of marker by celltype
+pheatmap(avg_expr, scale = "column", main = "Average Marker Expression per Cell Type\n", 
+         color = colorRampPalette(c("blue", "white", "red"))(10000))
+```
+
+```{r}
+# leave out the nuclei markers from our normalisation process
+useMarkers <- rownames(data_sce)[!rownames(data_sce) %in% c("DNA1", "DNA2", "HH3", "HH3_total", "HH3_ph")]
+
+# transform and normalise the marker expression of each cell type
+fergusonSPE <- normalizeCells(data_sce,
+                        markers = useMarkers,
+                        transformation = NULL,
+                        method = c("trim99", "minMax", "PC1"),
+                        assayIn = "counts",
+                        imageID = "metabricId",
+                        cores = nCores)
+
+norm = plot_marker_densities(fergusonSPE, sample_id_col = "metabricId", markers_to_plot = "CD3", assay_name = "norm")$CD3 + theme(legend.position = "none") + ggtitle("")
+log = plot_marker_densities(fergusonSPE, sample_id_col = "metabricId", markers_to_plot = c("CD3"), assay_name = "logcounts")$CD3 + theme(legend.position = "none") + ggtitle("")
+ggarrange(log, norm, ncol=2, labels=c("Log Counts","Normalized Counts"))
+```
+
 ::: Discussion
 *Discussion*
 
@@ -1104,7 +1139,7 @@ plot_boxplot(feature) +
 ```
 :::
 
-# Part 5: Disease classification with ClassifyR [Presentation]
+# Part 5: Disease classification with ClassifyR \[Presentation\]
 
 Recurrence risk estimation is a fundamental concern in medical research, particularly in the context of patient survival analysis. In this section, we will estimate recurrence risk using the molecular representation of individuals generated from `scFeatures` to build a survival model. We will use classifyR to build the survival model. The patient outcome is time-to-event, so, by default, ClassifyR will use Cox proportional hazards ranking to choose a set of features and also Cox proportional hazards to predict risk scores. We will also demonstrate other available models in `ClassifyR`.
 
