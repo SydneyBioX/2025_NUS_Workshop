@@ -55,24 +55,24 @@ install.packages("BiocManager", lib="/usr/local/lib/R/site-library")
 library(BiocManager)
 
 # Ensure specific Bioconductor version
-if (BiocManager::version() != "3.16") {
-  BiocManager::install(version = "3.16", update = TRUE, ask = FALSE)
+if (BiocManager::version() != "3.21") {
+  BiocManager::install(version="3.21", update=TRUE, ask=FALSE)
 }
 
-# CRAN packages
+# Install CRAN packages
 cran_pkgs <- c(
-  "ggplot2", "UpSetR", "ggthemes", "Seurat", "dplyr",
-  "devtools", "BiocManager", "scattermore", "survival",
+  "ggplot2", "UpSetR", "ggthemes", "Seurat", "dplyr", 
+  "devtools", "BiocManager", "scattermore", "survival", 
   "survminer", "spatstat", "reshape", "plotly"
 )
 
 for (pkg in cran_pkgs) {
-  if (!pkg %in% rownames(installed.packages(lib.loc="/usr/local/lib/R/site-library"))) {
-    install.packages(pkg, lib="/usr/local/lib/R/site-library")
+  if (!pkg %in% rownames(installed.packages())) {
+    install.packages(pkg, repos="https://cran.rstudio.com")
   }
 }
 
-# Bioconductor packages
+# Install Bioconductor packages
 bioc_pkgs <- c(
   "SingleCellExperiment", "lisaClust", "spicyR",
   "SPOTlight", "limma", "org.Hs.eg.db", "clusterProfiler",
@@ -80,19 +80,18 @@ bioc_pkgs <- c(
 )
 
 for (pkg in bioc_pkgs) {
-  if (!pkg %in% rownames(installed.packages(lib.loc="/usr/local/lib/R/site-library"))) {
-    BiocManager::install(pkg, lib="/usr/local/lib/R/site-library", ask = FALSE, update = TRUE)
+  if (!pkg %in% rownames(installed.packages())) {
+    BiocManager::install(pkg, ask=FALSE, update=TRUE)
   }
 }
 
-# GitHub packages
-if (!requireNamespace("devtools", quietly = TRUE))
-  install.packages("devtools", lib="/usr/local/lib/R/site-library")
+# Install GitHub packages
+if (!requireNamespace("devtools", quietly=TRUE))
+  install.packages("devtools", repos="https://cran.rstudio.com")
 library(devtools)
 
-devtools::install_github("SydneyBioX/scFeatures", lib="/usr/local/lib/R/site-library")
-devtools::install_github("SydneyBioX/scClassify", lib="/usr/local/lib/R/site-library")
-devtools::install_github("DarioS/ClassifyR", lib="/usr/local/lib/R/site-library")
+devtools::install_github("SydneyBioX/scFeatures")
+devtools::install_github("SydneyBioX/scClassify")
 RSCRIPT
 
 # ---- 4) Run the R installer globally

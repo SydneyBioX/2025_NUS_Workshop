@@ -3,9 +3,10 @@
 # --- Config ---
 GROUP="trainees"
 NUM_USERS=30
+FIRSTUSER=1
 SHARED_DIR="/opt/workshop_shared"
-REPO_URL="https://github.com/SydneyBioX/2025_CUHK_workshop.git"
-DATA_URL="https://www.dropbox.com/scl/fi/92h9jd23kxz7i62op2a5u/data.zip?rlkey=ycncox2mmds8555nps0z2p0t3&dl=1"  # direct download
+REPO_URL="https://github.com/SydneyBioX/2025_NUS_workshop.git"
+DATA_URL="https://www.dropbox.com/scl/fi/9aiijnmcv6s9p6wbwul11/data.zip?rlkey=gylo0qz0vmni5di67695z6w9n&e=1&st=xp9oxs72&dl=1"  # direct download
 
 # --- Group ---
 getent group "$GROUP" >/dev/null || sudo groupadd "$GROUP"
@@ -16,12 +17,12 @@ sudo chown root:root "$SHARED_DIR"
 sudo chmod 755 "$SHARED_DIR"
 
 # Clone or update the Git repo
-if [ ! -d "$SHARED_DIR/2025_CUHK_workshop/.git" ]; then
+if [ ! -d "$SHARED_DIR/2025_NUS_workshop/.git" ]; then
   echo "[*] Cloning workshop repo..."
-  sudo git clone "$REPO_URL" "$SHARED_DIR/2025_CUHK_workshop"
+  sudo git clone "$REPO_URL" "$SHARED_DIR/2025_NUS_workshop"
 else
   echo "[*] Updating workshop repo..."
-  sudo git -C "$SHARED_DIR/2025_CUHK_workshop" pull --ff-only
+  sudo git -C "$SHARED_DIR/2025_NUS_workshop" pull --ff-only
 fi
 
 # --- Download and unzip data once ---
@@ -40,7 +41,7 @@ sudo unzip -q "$SHARED_DIR/data.zip" -d "$SHARED_DIR"
 sudo chmod -R 755 "$SHARED_DIR/data"
 
 # --- Create users & copy materials ---
-for ((i=1; i<=NUM_USERS; i++)); do
+for ((i=FIRSTUSER; i<=NUM_USERS; i++)); do
   user="user${i}"
   home="/home/${user}"
 
@@ -52,12 +53,12 @@ for ((i=1; i<=NUM_USERS; i++)); do
   fi
 
   # Copy workshop repo and unzipped data folder
-  sudo mkdir -p "$home/2025_CUHK_workshop"
-  sudo cp -a "$SHARED_DIR/2025_CUHK_workshop/." "$home/2025_CUHK_workshop/"
+  sudo mkdir -p "$home/2025_NUS_workshop"
+  sudo cp -a "$SHARED_DIR/2025_NUS_workshop/." "$home/2025_NUS_workshop/"
   sudo cp -a "$SHARED_DIR/data" "$home/data"
 
   # Fix ownership
-  sudo chown -R "$user:$GROUP" "$home/2025_CUHK_workshop" "$home/data"
+  sudo chown -R "$user:$GROUP" "$home/2025_NUS_workshop" "$home/data"
 done
 
-echo "[✓] All trainee accounts now have 2025_CUHK_workshop and data folder."
+echo "[✓] All trainee accounts now have 2025_NUS_workshop and data folder."
