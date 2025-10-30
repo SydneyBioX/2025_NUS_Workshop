@@ -1,4 +1,4 @@
 url: https://sydneybiox.github.io/2025_NUS_Workshop/
 template:
   bootstrap: 5
-
+destination: docs
