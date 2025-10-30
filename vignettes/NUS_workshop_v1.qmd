@@ -465,9 +465,9 @@ suppressPackageStartupMessages({
   library(S4Vectors)
 })
 
-img_path  <- "../2025_NUS/data/raw_image_example/MB0002_1_345_fullstack.tiff"
-mask_path <- "../2025_NUS/data/raw_image_example/MB0002_1_345_cellmask.tiff"
-sample_id <- "../2025_NUS/data/raw_image_example/MB0002_1_345"
+img_path  <- "../data/raw_image_example/MB0002_1_345_fullstack.tiff"
+mask_path <- "../data/raw_image_example/MB0002_1_345_cellmask.tiff"
+sample_id <- "../data/raw_image_example/MB0002_1_345"
 
 #Load image (multi-channel)
 images <- loadImages(img_path, single_channel = FALSE)
@@ -482,12 +482,12 @@ mcols(images) <- DataFrame(sample_id = names(images))
 mcols(masks)  <- DataFrame(sample_id = names(masks))
 
 # Build channel names from CSVs and assign them
-metal_order <- read.csv("../2025_NUS/data/raw_image_example/channel_to_metal_order.csv",
+metal_order <- read.csv("../data/raw_image_example/channel_to_metal_order.csv",
                         header = FALSE, stringsAsFactors = FALSE)
 names(metal_order) <- "metal"
 metal_order$Channel <- seq_len(nrow(metal_order))
 
-metal_map <- read.csv("../2025_NUS/data/raw_image_example/metal_to_marker.csv",
+metal_map <- read.csv("../data/raw_image_example/metal_to_marker.csv",
                       header = TRUE, stringsAsFactors = FALSE)
 
 merged <- merge(metal_order, metal_map, by = "metal", all.x = TRUE)
@@ -545,7 +545,7 @@ First, we take a quick look at the structure of the SingleCell Experiment object
 
 ```{r load, warning=FALSE, error=FALSE, message=FALSE}
 # Load data
-load("../2025_NUS/data/breastCancer.RData")
+load("../data/breastCancer.RData")
 data_sce = IMC
 
 # Structure of our data
@@ -820,7 +820,7 @@ Here we plot the correlation of different markers for a subset of samples. This 
 <br>
 
 ```{r, warning=FALSE, error=FALSE, message=FALSE}
-coexp_df <- readRDS("../2025_NUS/data/coexp_df.rds")
+coexp_df <- readRDS("../data/coexp_df.rds")
 marker_list <- c("CD20", "CD3", "CD68", "vWF_CD31", "Vimentin", "HER2")
  
 # Proportion heatmaps
@@ -868,7 +868,7 @@ ggplot(merged_df, aes(x = cell_count, y = mean_coexp_prob)) +
   geom_point(size = 3, color = "steelblue") + 
   labs(
     x = "Cell Count per Sample",
-    y = "Mean Co-expression Probability",
+    y = "Mean Co-expression",
     title = "Mean Co-expression vs. Cell Count"
   ) +
   theme_minimal(base_size = 14)
@@ -915,6 +915,7 @@ avg_expr <- avg_expr[, c("CD20", "CD3", "CD68", "CD45",
 
 # Plot heatmap of marker by celltype
 pheatmap(avg_expr, scale = "column", main = "Average Marker Expression per Cell Type\n", 
+         cluster_rows = FALSE,
          color = colorRampPalette(c("blue", "white", "red"))(10000))
 ```
 
@@ -955,7 +956,6 @@ one_sample  <- data.frame(colData(one_sample))
  
 ggplot(one_sample, aes(x = Location_Center_X, y = Location_Center_Y, colour = description)) + 
   geom_point(alpha=0.7) + 
-  scale_colour_tableau() + 
   theme(panel.background=element_blank(),
         axis.line=element_line(color="black")) +
   ggtitle("Original slide")
@@ -1015,6 +1015,80 @@ draw_region_clustering_result(data_sce ,
 :::
 
 <br>
+
+### Spatial regions detection across multiple individuals (Banksy)
+
+To perform spatial region detection across multiple individuals, we will use the `Banksy` package. The `Banksy` method identifies spatial regions by integrating both gene expression and spatial information. Below is the code to perform spatial region detection using `Banksy` and visualise the results.
+```{r,fig.height=4, fig.width= 6, warning=FALSE, error=FALSE, message=FALSE}
+library(Banksy)
+library(SpatialExperiment)
+library(cowplot)
+
+### The code below takes a while to run, so we have saved the output as an RDS file that can be loaded directly.
+
+# spe_base <- SpatialExperiment(
+#   assays = assays(data_sce),
+#   rowData = rowData(data_sce),
+#   colData = colData(data_sce),
+#   spatialCoords = as.matrix(colData(data_sce)[, c("Location_Center_X", "Location_Center_Y")])
+# )
+# assay_to_use <- if ("counts" %in% assayNames(spe_base)) "counts" else assayNames(spe_base)[1]
+# sample_ids <- unique(spe_base$metabricId)
+# spe_list <- lapply(sample_ids, function(id) {
+#   spe_subset <- spe_base[, spe_base$metabricId == id]
+#   Banksy::computeBanksy(
+#     spe_subset,
+#     assay_name = assay_to_use,
+#     k_geom = 18
+#   )
+# })
+# spe_joint <- do.call(cbind, spe_list)
+# spe_joint <- Banksy::runBanksyPCA(
+#   spe_joint,
+#   lambda = 0.8,
+#   npcs = 30,
+#   group = "metabricId"
+# )
+# spe_joint <- Banksy::clusterBanksy(
+#   spe_joint,
+#   lambda = 0.8,
+#   npcs = 30,
+#   algo = "kmeans",
+#   kmeans.centers = 5
+# )
+# clust_col <- grep("^clust_", colnames(colData(spe_joint)), value = TRUE)[1]
+# data_sce$banksy_region <- colData(spe_joint)[colnames(data_sce), clust_col]
+
+banksy_ouput_spe_joint <- readRDS("../data/banksy_ouput_spe_joint.rds")
+
+hatchingPlot(
+  banksy_ouput_spe_joint,
+  region = "banksy_region",
+  imageID = "metabricId",
+  cellType = "description",
+  spatialCoords = c("Location_Center_X", "Location_Center_Y")
+)
+```
+We can also visualise the spatial region detection results across multiple individuals side by side for comparison. Below is an example of visualising two individuals, `MB-0002` and `MB-0064`. Notice the different cell type compositions in the different regions between the two individuals.
+
+```{r,fig.height=5, fig.width= 12, warning=FALSE, error=FALSE, message=FALSE}
+samples_to_plot <- c("MB-0002", "MB-0064")
+plot_list <- lapply(samples_to_plot, function(id) {
+  idx <- banksy_ouput_spe_joint$metabricId == id
+  if (!any(idx)) return(NULL)
+  hatchingPlot(
+    banksy_ouput_spe_joint[, idx],
+    region = "banksy_region",
+    imageID = "metabricId",
+    cellType = "description",
+    spatialCoords = c("Location_Center_X", "Location_Center_Y")
+  ) + ggtitle(id)
+})
+plot_list <- plot_list[!vapply(plot_list, is.null, logical(1))]
+cowplot::plot_grid(plotlist = plot_list, ncol = 2)
+```
+
+
 
 ### Across individuals (Optional)
 
@@ -1148,6 +1222,52 @@ plot_barplot(feature ) + ggtitle("Proportion raw feature") + labs(y = "proportio
 
 ```
 
+### Association Study
+
+Can we identify “differential expression” for a feature of interest? The R object scfeatures_result contains a variety of features. A important question focuses on the identification of features that reflect an association with the prognostic outcome, specifically distinguishing between good and poor outcomes. The code provided below demonstrates the use of the limma() function to fit a linear model for the purpose of analysing gene_mean_celltype as an illustration feature type. The feature type known as gene_mean_celltype represents the mean protein expression for each sub-cell-type specific to a spatial region. It is a matrix consisting of 77 individuals and 4180 features. It is important to acknowledge that within the context of our IMC data, the term “gene” is used to refer to “protein”.
+
+```{r, warning=FALSE, error=FALSE, message=FALSE}
+scfeatures_result <- readRDS("../data/scfeatures_result.RDS")
+# Extract cell-type specific gene expression for all regions. 
+gene_mean_celltype <- scfeatures_result$gene_mean_celltype
+
+# Extract HR+ CK7 cell-type specific gene expression for Region5
+index <-  grep("HR+ CK7--region5", colnames(gene_mean_celltype) , fixed= T)
+gene_mean_celltype <- gene_mean_celltype [, index] 
+
+# transpose to ensure we have gene by sample matrix
+gene_mean_celltype <- t(gene_mean_celltype)
+      
+# Extract the two conditions of interest - poor prognosis vs good prognosis
+condition  <- unlist( lapply( strsplit( colnames(gene_mean_celltype) , "_cond_"), `[`, 2))
+condition <- data.frame(sample = colnames(gene_mean_celltype), condition = condition )
+select_index <- which( condition$condition %in% c("poor",  "good" ))
+condition <- condition[ select_index, ]
+gene_mean_celltype<- gene_mean_celltype [ ,  select_index]
+
+
+# Calculate log fold change each protein using limma
+design <- model.matrix(~condition, data = condition)
+fit <- lmFit(gene_mean_celltype, design)
+fit <- eBayes(fit)
+tT <- topTable(fit, n = Inf)
+tT$gene <- rownames(tT)
+tT[1:6] <- signif(tT[1:6], digits=2)
+DT::datatable(tT)
+```
+
+We visualise the comparison using a volcano plot and a dotplot for the cell-type specific expression feature. This is a type of scatter-plot that is used to quickly identify changes in large datasets and represent the significance (y-axis) versus effect size or fold-change (x-axis).
+
+```{r fig.height=4, fig.width=8, warning=FALSE, error=FALSE, message=FALSE}
+# order the proteins by log fold change 
+tT <- tT[ order(tT$logFC, decreasing = T), ]
+tT <- tT[1:20, ]
+ggplot( tT , aes( y = reorder(gene, logFC) , x = logFC  ) )+
+      geom_point(aes(colour=-log10(P.Value)), alpha=2/3, size=4) +
+      scale_colour_gradient(low="blue",high="red") + theme_bw() + 
+      xlab("logFC") + ylab("region specific cell type specfic features" ) 
+```
+
 ### scFeatures code (Optional)
 
 The code below enable us to generate all feature types for all cell-types in a line. Due to limitations with today's computational capacity, **Please DO NOT run it in today's workshop, it will crash your system**.
@@ -1169,7 +1289,7 @@ Assuming you have already generated a collection of molecular representation for
 
 ```{r, warning=FALSE, error=FALSE, message=FALSE}
 # Upload pre-generated RDS file
-scfeatures_result <- readRDS("../2025_NUS/data/scfeatures_result.RDS")
+scfeatures_result <- readRDS("../data/scfeatures_result.RDS")
 
 # What are the features and the dimensions of features matrices that we have generated?
 lapply(scfeatures_result, dim)
@@ -1197,25 +1317,71 @@ This metric measures the correlation of proteins/genes between a cell and its ne
 ```{r, warning=FALSE, error=FALSE, message=FALSE}
 feature <- scfeatures_result$nn_correlation
 feature <- feature[ grep("poor|good", rownames(feature )),  ]
-plot_boxplot(feature) + 
-  theme(panel.background=element_blank(),
-        axis.line=element_line(color="black")) +
-  ggtitle("Nearest neighbour correlation feature")
+
+top_features <- feature %>%
+  mutate(Group = ifelse(grepl("good", rownames(feature)), "Good Prognosis", "Poor Prognosis")) %>%
+  pivot_longer(cols = -Group, names_to = "variable", values_to = "value") %>%
+  group_by(variable) %>%
+  summarise(
+    cohens_d = (mean(value[Group == "Good Prognosis"]) - mean(value[Group == "Poor Prognosis"])) /sd(value),
+    .groups = "drop"
+  ) %>%
+  arrange(desc(abs(cohens_d))) %>%
+  slice_head(n = 5) %>%
+  pull(variable)
+
+feature %>%
+  mutate(Group = ifelse(grepl("good", rownames(feature)), "Good Prognosis", "Poor Prognosis")) %>%
+  pivot_longer(cols = -Group, names_to = "variable", values_to = "value") %>%
+  filter(variable %in% top_features) %>%  # Keep only top 5
+  ggplot(aes(y = variable, x = value, fill = Group)) + 
+  geom_boxplot() + theme_bw() + labs(x = "Nearest Neighbour Correlation", y = "Marker")
 ```
 
 ### L statistics
 
-The L function is a spatial statistic used to assess the spatial distribution of cell-types. It assesses the significance of cell-cell interactions, by calculating the density of a cell-type with other cell-types within a certain radius. High values indicate spatial association (co-localisation), low values indicate spatial avoidance.For clarity, we plot the L statistics for a subset of regions.
+The L function is a spatial statistic used to assess the spatial distribution of cell-types. It assesses the significance of cell-cell interactions, by calculating the density of a cell-type with other cell-types within a certain radius. High values indicate spatial association (co-localisation), low values indicate spatial avoidance. To demonstrate the L-function, we will plot a specific patient "MB-0128" who has a high L value for B cells interacting with Fibroblasts and a low L value for B cells interacting with HR- CK7- cells.
 
-```{r, warning=FALSE, error=FALSE, message=FALSE}
-feature <- scfeatures_result$L_stats
-idx <- which(grepl("^T cells-region4_HR", colnames(feature))==TRUE)
-feature <- feature[,idx]
-feature <- feature[ grep("poor|good", rownames(feature )),  ]
-plot_boxplot(feature) + 
-  theme(panel.background=element_blank(),
+```{r, fig.height=4, fig.width=10, warning=FALSE, error=FALSE, message=FALSE}
+tableau_palette <- scale_colour_tableau( palette = "Tableau 20")
+color_codes <- tableau_palette$palette(10)
+
+# Create a named color vector
+cell_colors <- c(
+  "B cells" = color_codes[1],
+  "Fibroblasts" = color_codes[2],
+  "HR- CK7-" = color_codes[9],
+  "others" = color_codes[4]
+)
+
+# select one patient 
+one_sample  <- data_sce[ , data_sce$metabricId == "MB-0128"  ]
+one_sample <- data.frame( colData(one_sample) )
+
+one_sample$celltype <- one_sample$description
+
+# High L-function value plot.
+one_sample <- data.frame(colData(data_sce[, data_sce$metabricId == "MB-0128"]))
+one_sample$celltype <- one_sample$description
+index <- one_sample$celltype %in% c("B cells", "Fibroblasts")
+one_sample$celltype[!index] <- "others"
+a <- ggplot(one_sample, aes(x = Location_Center_X, y = Location_Center_Y, colour = celltype)) + 
+  geom_point() + theme(panel.background=element_blank(),
         axis.line=element_line(color="black")) +
-  ggtitle("L statistics")
+  scale_colour_manual(values = cell_colors) +  # Use named vector
+  ggtitle("Patient MB-0128 - high L value with \n B cells interacting Fibroblasts")
+
+# Low L-function value plot.
+one_sample$celltype <- one_sample$description
+index <- one_sample$celltype %in% c("Fibroblasts", "HR- CK7-")
+one_sample$celltype[!index] <- "others"
+b <- ggplot(one_sample, aes(x = Location_Center_X, y = Location_Center_Y, colour = celltype)) + 
+  geom_point() + theme(panel.background=element_blank(),
+        axis.line=element_line(color="black")) +
+  scale_colour_manual(values = cell_colors) +  # Use named vector
+  ggtitle("Patient MB-0128 - low L value with \n B cells interacting HR_ CK7")
+
+ggarrange(plotlist = list(a, b))
 ```
 
 ### Moran's I
@@ -1225,10 +1391,25 @@ Moran's I is a spatial autocorrelation statistic based on both location and valu
 ```{r, warning=FALSE, error=FALSE, message=FALSE}
 feature <- scfeatures_result$morans_I
 feature <- feature[ grep("poor|good", rownames(feature )),  ]
-plot_boxplot(feature) + 
-  theme(panel.background=element_blank(),
-        axis.line=element_line(color="black")) +
-  ggtitle("Moran's I")
+
+top_features <- feature %>%
+  mutate(Group = ifelse(grepl("good", rownames(feature)), "Good Prognosis", "Poor Prognosis")) %>%
+  pivot_longer(cols = -Group, names_to = "variable", values_to = "value") %>%
+  group_by(variable) %>%
+  summarise(
+    cohens_d = (mean(value[Group == "Good Prognosis"]) - mean(value[Group == "Poor Prognosis"])),
+    .groups = "drop"
+  ) %>%
+  arrange(desc(abs(cohens_d))) %>%
+  slice_head(n = 5) %>%
+  pull(variable)
+
+feature %>%
+  mutate(Group = ifelse(grepl("good", rownames(feature)), "Good Prognosis", "Poor Prognosis")) %>%
+  pivot_longer(cols = -Group, names_to = "variable", values_to = "value") %>%
+  filter(variable %in% c(top_features, "Ki67")) %>%  # Keep only top 5
+  ggplot(aes(y = reorder(variable,value), x = value, fill = Group)) + 
+  geom_boxplot() + theme_bw() + labs(x = "Moran's I", y = "Marker")
 ```
 :::
 
@@ -1271,7 +1452,7 @@ classifyr_result_IMC <- crossValidate(clinicalAndOmics, c("timeRFS", "eventRFS")
 ```
 
 ```{r, warning=FALSE, error=FALSE, message=FALSE}
-classifyr_result_IMC <- readRDS("../2025_NUS/data/classifyr_result_IMC.rds")
+classifyr_result_IMC <- readRDS("../data/classifyr_result_IMC.rds")
 ```
 
 Cox proportional hazards is a classical statistical method, as opposed to machine learning methods like Random survival forest. These machine learning methods can build remarkably complex relationships between features, however their running time can be much longer than Cox proportional hazards. We use feature selection to limit the number of features considered to at most 100 per metafeature and to save time, **you can just load the prepared RDS file.** We will compare the predictive performance between these methods.
@@ -1284,7 +1465,7 @@ survForestCV <- crossValidate(clinicalAndOmics, outcome, nFeatures = nFeatures,
 ```
 
 ```{r, warning=FALSE, error=FALSE, message=FALSE}
-survForestCV <- readRDS("../2025_NUS/data/survForestCV.RDS")
+survForestCV <- readRDS("../data/survForestCV.RDS")
 ```
 
 ### Model performance (Optional)
