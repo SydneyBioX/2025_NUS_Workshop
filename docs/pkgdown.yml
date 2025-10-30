@@ -2,9 +2,8 @@ pandoc: 3.6.3
 pkgdown: 2.1.3
 pkgdown_sha: ~
 articles:
-  CUHK_workshop_v4: CUHK_workshop_v4.html
   NUS_workshop_v1: NUS_workshop_v1.html
-last_built: 2025-10-30T00:04Z
+last_built: 2025-10-30T00:14Z
 urls:
   reference: https://sydneybiox.github.io/2025_NUS_Workshop/reference
   article: https://sydneybiox.github.io/2025_NUS_Workshop/articles
