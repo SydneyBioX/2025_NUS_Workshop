@@ -35,7 +35,9 @@ sudo apt install -y \
 
 sudo apt install libfftw3-dev
 
+sudo apt install cmake
 
+sudo apt-get install libv8-dev
 
 # ---- 2) Ensure global R site library is writable during install
 SITE_LIB="/usr/local/lib/R/site-library"
@@ -73,7 +75,7 @@ if (BiocManager::version() != "3.21") {
 cran_pkgs <- c(
   "ggplot2", "UpSetR", "ggthemes", "Seurat", "dplyr", 
   "devtools", "BiocManager", "scattermore", "survival", 
-  "survminer", "spatstat", "reshape", "plotly","fftwtools"
+  "survminer", "spatstat", "reshape", "plotly","fftwtools","naniar","survminer","V8"
 )
 
 for (pkg in cran_pkgs) {

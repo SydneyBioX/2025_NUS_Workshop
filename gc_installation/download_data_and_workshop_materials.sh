@@ -6,7 +6,7 @@ NUM_USERS=30
 FIRSTUSER=1
 SHARED_DIR="/opt/workshop_shared"
 REPO_URL="https://github.com/SydneyBioX/2025_NUS_workshop.git"
-DATA_URL="https://www.dropbox.com/scl/fi/9aiijnmcv6s9p6wbwul11/data.zip?rlkey=gylo0qz0vmni5di67695z6w9n&e=1&st=xp9oxs72&dl=1"  # direct download
+DATA_URL="https://www.dropbox.com/scl/fi/dz6b40ykggdxb8qnkiu8t/data.zip?rlkey=bbmyo81x1hdbj4ex7pfxfyppj&st=n6a7gase&dl=1"  # direct download
 
 # --- Group ---
 getent group "$GROUP" >/dev/null || sudo groupadd "$GROUP"
@@ -36,8 +36,8 @@ if ! command -v unzip &>/dev/null; then
 fi
 
 # unzip into $SHARED_DIR/data
-sudo rm -rf "$SHARED_DIR/data"
-sudo unzip -q "$SHARED_DIR/data.zip" -d "$SHARED_DIR"
+sudo mkdir -p "$SHARED_DIR/data"
+sudo unzip -q "$SHARED_DIR/data.zip" -d "$SHARED_DIR/data"
 sudo chmod -R 755 "$SHARED_DIR/data"
 
 # --- Create users & copy materials ---
@@ -55,7 +55,8 @@ for ((i=FIRSTUSER; i<=NUM_USERS; i++)); do
   # Copy workshop repo and unzipped data folder
   sudo mkdir -p "$home/2025_NUS_workshop"
   sudo cp -a "$SHARED_DIR/2025_NUS_workshop/." "$home/2025_NUS_workshop/"
-  sudo cp -a "$SHARED_DIR/data" "$home/data"
+  sudo cp -a "$SHARED_DIR/data" "$home/2025_NUS_workshop/data"
+    sudo cp -a "$SHARED_DIR/data" "$home/data"
 
   # Fix ownership
   sudo chown -R "$user:$GROUP" "$home/2025_NUS_workshop" "$home/data"
